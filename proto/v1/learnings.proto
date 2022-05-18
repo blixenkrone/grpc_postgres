@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package proto.learnings.v1;
+
+message Material {
+    string id = 1;
+    repeated string url = 2;
+}
+
+message Module {
+    enum Level {
+        LEVEL_UNSPECIFIED = 0;
+        LEVEL_BEGINNER = 1;
+        LEVEL_INTERMEDIATE= 2;
+        LEVEL_PRO = 3;
+        LEVEL_MASTER = 4;
+    }
+
+    string id = 1;
+    string course_id = 2;
+    Level level = 3;
+    repeated Material material = 4;
+}
+
+message Course {
+    string id = 1;
+    bool is_active = 2;
+    string name = 3;
+    repeated Module modules = 4;
+    google.protobuf.Timestamp created_at  = 5;
+    // when did this course get updates?
+    google.protobuf.Timestamp updated_at  = 6;
+}
+
+message AddCourseRequest{
+
+}
+
+service LearningsService {
+    rpc AddCourse(AddCourseRequest) returns (Course){};
+    rpc ListCourses(ListCoursesRequest) returns (stream Course){};
+}
