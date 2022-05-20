@@ -17,4 +17,4 @@ CREATE TABLE IF NOT EXISTS material(
     description TEXT NOT NULL,
     explanation TEXT,
     object_url TEXT
-)
+);

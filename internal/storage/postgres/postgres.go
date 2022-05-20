@@ -12,16 +12,16 @@ type DB struct {
 	db *sqlx.DB
 }
 
-func NewStore(connStr string) (DB, error) {
+func NewDB(connStr string) (DB, error) {
 	s, err := pgx.ParseConnectionString(connStr)
 	if err != nil {
 		return DB{}, fmt.Errorf("connetion string error: %w", err)
 	}
 
-	db := stdlib.OpenDB(s)
-	conn := sqlx.NewDb(db, "postgres")
+	stdDB := stdlib.OpenDB(s)
+	sqlxDB := sqlx.NewDb(stdDB, "postgres")
 
-	return DB{db: conn}, nil
+	return DB{db: sqlxDB}, nil
 }
 
 // TODO:
@@ -31,6 +31,10 @@ func (s DB) RunMigrations() error {
 
 func (s DB) DB() *sqlx.DB {
 	return s.db
+}
+
+func (s DB) Ping() error {
+	return s.db.Ping()
 }
 
 func (s DB) Close() error {

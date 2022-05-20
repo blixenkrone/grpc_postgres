@@ -11,6 +11,7 @@ import (
 
 	"github.com/blixenkrone/lea/internal/server"
 	"github.com/blixenkrone/lea/internal/storage"
+	"github.com/blixenkrone/lea/internal/storage/postgres"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 )
@@ -34,7 +35,12 @@ func main() {
 		panic("no env found for pg conn str")
 	}
 
-	store, err := storage.NewLearningStore(pgConnStr)
+	db, err := postgres.NewDB(pgConnStr)
+	if err != nil {
+		panic(err)
+	}
+
+	store, err := storage.NewLearningStore(db)
 	if err != nil {
 		panic(err)
 	}

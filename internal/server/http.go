@@ -93,6 +93,12 @@ func (s Server) getMaterial() http.HandlerFunc {
 	}
 }
 
+func (s Server) addCourse() http.HandlerFunc {
+	return func(rw http.ResponseWriter, r *http.Request) {
+
+	}
+}
+
 func (s Server) getCourse() http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		params := mux.Vars(r)

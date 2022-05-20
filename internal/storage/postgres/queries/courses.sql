@@ -12,4 +12,4 @@ INSERT INTO
         course_name
     )
 VALUES
-    ($ 1, $ 2, $ 3) RETURNING *;
+    ($1, $2, $3) RETURNING *;

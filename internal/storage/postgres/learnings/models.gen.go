@@ -25,7 +25,7 @@ type Material struct {
 }
 
 type Module struct {
-	ID       uuid.UUID
-	CourseID uuid.UUID
-	NumLevel int16
+	ID              uuid.UUID
+	CourseID        uuid.UUID
+	ExperienceLevel int16
 }

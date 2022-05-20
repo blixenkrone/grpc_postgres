@@ -34,7 +34,12 @@ message Course {
     google.protobuf.Timestamp updated_at  = 6;
 }
 
-message AddCourseRequest{
+message AddCourseRequest {
+    string name = 1;
+    bool is_active = 2;
+}
+
+message ListCoursesRequest {
 
 }
 
