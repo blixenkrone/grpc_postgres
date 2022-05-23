@@ -6,10 +6,6 @@ FROM
 
 -- name: AddCourse :one
 INSERT INTO
-    courses (
-        id,
-        is_active,
-        course_name
-    )
+    courses (id, is_active, course_name)
 VALUES
     ($1, $2, $3) RETURNING *;

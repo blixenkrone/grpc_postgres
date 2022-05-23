@@ -1,11 +1,10 @@
 package docker
 
 import (
+	"database/sql"
 	"fmt"
-	"strings"
 	"time"
 
-	"github.com/blixenkrone/lea/internal/storage/postgres"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 )
@@ -30,10 +29,10 @@ type Resource[T any] struct {
 
 // TODO: minio
 
-func (p Pool) NewPostgres(dbname string) (*Resource[postgres.DB], error) {
+func (p Pool) NewPostgres(dbname string) (*Resource[*sql.DB], error) {
 	env := []string{
-		"POSTGRES_PASSWORD=password",
 		"POSTGRES_USER=admin",
+		"POSTGRES_PASSWORD=password",
 		fmt.Sprintf("POSTGRES_DB=%s", dbname),
 		"listen_addresses = '*'",
 	}
@@ -55,27 +54,25 @@ func (p Pool) NewPostgres(dbname string) (*Resource[postgres.DB], error) {
 	// Tell docker to hard kill the container in 120 seconds
 	resource.Expire(120)
 
-	var pgdb postgres.DB
+	var pgdb *sql.DB
 	storeFn := func() error {
 		hostAndPort := resource.GetHostPort("5432/tcp")
-		parts := strings.Split(hostAndPort, ":")
-		connStr := fmt.Sprintf("user=admin password=password host=%s port=%s dbname=%s", parts[0], parts[1], dbname)
-		pgdb, err = postgres.NewDB(connStr)
+		// parts := strings.Split(hostAndPort, ":")
+		// connStr := fmt.Sprintf("user=admin password=password host=%s port=%s dbname=%s", parts[0], parts[1], dbname)
+		connStr := fmt.Sprintf("postgres://admin:password@%s/%s?sslmode=disable", hostAndPort, dbname)
+		db, err := sql.Open("postgres", connStr)
 		if err != nil {
 			return fmt.Errorf("error creating postgres store: %w", err)
 		}
-		return pgdb.Ping()
+		pgdb = db
+		return db.Ping()
 	}
 
 	if err := p.pool.Retry(storeFn); err != nil {
 		return nil, err
 	}
 
-	if err := pgdb.RunMigrations(); err != nil {
-		return nil, err
-	}
-
-	return &Resource[postgres.DB]{resource, pgdb}, nil
+	return &Resource[*sql.DB]{resource, pgdb}, nil
 }
 
 func (r Resource[T]) Teardown() error {

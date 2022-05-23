@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/blixenkrone/lea/internal/storage/postgres"
-	"github.com/blixenkrone/lea/internal/storage/postgres/learnings"
 	learningsv1 "github.com/blixenkrone/lea/proto/compiled/v1"
+	"github.com/blixenkrone/lea/storage/postgres"
+	"github.com/blixenkrone/lea/storage/postgres/learnings"
 	"github.com/google/uuid"
 )
 
@@ -15,11 +15,11 @@ type LearningsStore struct {
 	querier *learnings.Queries
 }
 
-// type LearningsReadWriter interface {
-// 	GetCourses(ctx context.Context) ([]learnings.Course, error)
-// }
+type LearningsReadWriter interface {
+	GetCourses(ctx context.Context) ([]learnings.Course, error)
+}
 
-// var _ LearningsReadWriter = LearningsStore{}
+var _ LearningsReadWriter = LearningsStore{}
 
 func NewLearningStore(db postgres.DB) (LearningsStore, error) {
 	if err := db.RunMigrations(); err != nil {

@@ -28,6 +28,7 @@ message Course {
     string id = 1;
     bool is_active = 2;
     string name = 3;
+
     repeated Module modules = 4;
     google.protobuf.Timestamp created_at  = 5;
     // when did this course get updates?

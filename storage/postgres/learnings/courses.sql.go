@@ -13,13 +13,9 @@ import (
 
 const addCourse = `-- name: AddCourse :one
 INSERT INTO
-    courses (
-        id,
-        is_active,
-        course_name
-    )
+    courses (id, is_active, course_name)
 VALUES
-    ($1, $2, $3) RETURNING id, is_active, course_name
+    ($1, $2, $3) RETURNING id, category_id, is_active, course_name
 `
 
 type AddCourseParams struct {
@@ -31,13 +27,18 @@ type AddCourseParams struct {
 func (q *Queries) AddCourse(ctx context.Context, arg AddCourseParams) (Course, error) {
 	row := q.db.QueryRowContext(ctx, addCourse, arg.ID, arg.IsActive, arg.CourseName)
 	var i Course
-	err := row.Scan(&i.ID, &i.IsActive, &i.CourseName)
+	err := row.Scan(
+		&i.ID,
+		&i.CategoryID,
+		&i.IsActive,
+		&i.CourseName,
+	)
 	return i, err
 }
 
 const listCourses = `-- name: ListCourses :many
 SELECT
-    id, is_active, course_name
+    id, category_id, is_active, course_name
 FROM
     courses
 `
@@ -51,7 +52,12 @@ func (q *Queries) ListCourses(ctx context.Context) ([]Course, error) {
 	var items []Course
 	for rows.Next() {
 		var i Course
-		if err := rows.Scan(&i.ID, &i.IsActive, &i.CourseName); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.CategoryID,
+			&i.IsActive,
+			&i.CourseName,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

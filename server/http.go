@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/blixenkrone/lea/internal/storage"
 	learningsv1 "github.com/blixenkrone/lea/proto/compiled/v1"
+	"github.com/blixenkrone/lea/storage"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
@@ -88,6 +88,13 @@ func (s Server) postMaterial() http.HandlerFunc {
 
 // GET /module/{id}/material
 func (s Server) getMaterial() http.HandlerFunc {
+	return func(rw http.ResponseWriter, r *http.Request) {
+
+	}
+}
+
+// POST /module/{id}/material/
+func (s Server) addMaterial() http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 
 	}

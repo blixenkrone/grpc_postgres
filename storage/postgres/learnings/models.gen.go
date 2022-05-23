@@ -5,13 +5,17 @@
 package learnings
 
 import (
-	"database/sql"
-
 	"github.com/google/uuid"
 )
 
+type Category struct {
+	ID    uuid.UUID
+	Label string
+}
+
 type Course struct {
 	ID         uuid.UUID
+	CategoryID uuid.UUID
 	IsActive   bool
 	CourseName string
 }
@@ -20,8 +24,8 @@ type Material struct {
 	ID          uuid.UUID
 	ModuleID    uuid.UUID
 	Description string
-	Explanation sql.NullString
-	ObjectUrl   sql.NullString
+	Explanation string
+	ObjectUrl   string
 }
 
 type Module struct {

@@ -1,6 +1,4 @@
-.PHONY: lint
-# USE DOCKER FOR GENERATING THINGS ON CI
-
+.PHONY: generate_sqlc,generate_protos,lint_protos,migrate_up,postgres_local
 generate_sqlc:
 	docker run --rm -v $$(pwd)/internal/storage/postgres:/src -w /src kjconroy/sqlc generate
 

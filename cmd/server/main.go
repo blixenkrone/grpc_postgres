@@ -9,9 +9,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/blixenkrone/lea/internal/server"
-	"github.com/blixenkrone/lea/internal/storage"
-	"github.com/blixenkrone/lea/internal/storage/postgres"
+	"github.com/blixenkrone/lea/server"
+	"github.com/blixenkrone/lea/storage"
+	"github.com/blixenkrone/lea/storage/postgres"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 )
@@ -35,7 +35,7 @@ func main() {
 		panic("no env found for pg conn str")
 	}
 
-	db, err := postgres.NewDB(pgConnStr)
+	db, err := postgres.NewFromConnectionString(pgConnStr)
 	if err != nil {
 		panic(err)
 	}
