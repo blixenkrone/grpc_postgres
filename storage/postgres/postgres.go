@@ -3,6 +3,8 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
+	"os"
+	"path"
 
 	_ "github.com/lib/pq"
 
@@ -35,8 +37,13 @@ func NewFromConnectionString(connStr string) (DB, error) {
 	return DB{sqlxdb: sqlxDB}, nil
 }
 
-func (s DB) RunMigrations() error {
-	src := "file://migrations"
+func (s *DB) RunMigrations() error {
+
+	usr, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+	src := fmt.Sprintf("file://%s/storage/postgres/migrations", path.Dir(usr))
 
 	driver, err := postgres.WithInstance(s.sqlxdb.DB, &postgres.Config{})
 	if err != nil {

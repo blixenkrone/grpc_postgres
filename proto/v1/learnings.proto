@@ -4,6 +4,8 @@ import "google/protobuf/timestamp.proto";
 
 package proto.learnings.v1;
 
+option go_package = "learningsv1";
+
 message Material {
     string id = 1;
     repeated string url = 2;

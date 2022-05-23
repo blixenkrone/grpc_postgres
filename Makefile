@@ -1,6 +1,13 @@
 .PHONY: generate_sqlc,generate_protos,lint_protos,migrate_up,postgres_local
+
+generate:
+	echo generating protos!
+	generate_protos
+	echo generating sqlc!
+	generate_sqlc
+
 generate_sqlc:
-	docker run --rm -v $$(pwd)/internal/storage/postgres:/src -w /src kjconroy/sqlc generate
+	docker run --rm -v $$(pwd)/storage/postgres:/src -w /src kjconroy/sqlc generate
 
 generate_protos:
 	buf generate
