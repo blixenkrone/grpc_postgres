@@ -5,11 +5,13 @@
 package learnings
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 )
 
 type Category struct {
-	ID    uuid.UUID
+	ID    int32
 	Label string
 }
 
@@ -18,6 +20,8 @@ type Course struct {
 	CategoryID uuid.UUID
 	IsActive   bool
 	CourseName string
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
 }
 
 type Material struct {

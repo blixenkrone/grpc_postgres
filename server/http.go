@@ -8,7 +8,6 @@ import (
 
 	learningsv1 "github.com/blixenkrone/lea/proto/compiled/v1"
 	"github.com/blixenkrone/lea/storage"
-	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 )
@@ -118,14 +117,6 @@ func (s Server) getCourse() http.HandlerFunc {
 			Id:       id,
 			IsActive: true,
 			Name:     "hello world!",
-			Modules: []*learningsv1.Module{
-				{
-					Id:       id,
-					CourseId: uuid.New().String(),
-					Level:    learningsv1.Module_LEVEL_BEGINNER,
-					Material: []*learningsv1.Material{},
-				},
-			},
 		}
 		if err := json.NewEncoder(rw).Encode(&c); err != nil {
 			panic(err)

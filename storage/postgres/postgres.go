@@ -38,7 +38,6 @@ func NewFromConnectionString(connStr string) (DB, error) {
 }
 
 func (s *DB) RunMigrations() error {
-
 	usr, err := os.Getwd()
 	if err != nil {
 		return err

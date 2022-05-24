@@ -47,10 +47,8 @@ func (s LearningsStore) AddCourse(ctx context.Context, l *learningsv1.Course) (l
 		ID:         uuid.New(),
 		IsActive:   l.IsActive,
 		CourseName: l.Name,
+		CreatedAt:  l.CreatedAt.AsTime(),
+		UpdatedAt:  l.UpdatedAt.AsTime(),
 	}
-	c, err := s.querier.AddCourse(ctx, p)
-	if err != nil {
-		return learnings.Course{}, err
-	}
-	return c, nil
+	return s.querier.AddCourse(ctx, p)
 }

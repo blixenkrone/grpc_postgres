@@ -7,38 +7,49 @@ package learnings
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 )
 
 const addCourse = `-- name: AddCourse :one
 INSERT INTO
-    courses (id, is_active, course_name)
+    courses (id, is_active, course_name, created_at, updated_at)
 VALUES
-    ($1, $2, $3) RETURNING id, category_id, is_active, course_name
+    ($1, $2, $3, $4, $5) RETURNING id, category_id, is_active, course_name, created_at, updated_at
 `
 
 type AddCourseParams struct {
 	ID         uuid.UUID
 	IsActive   bool
 	CourseName string
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
 }
 
 func (q *Queries) AddCourse(ctx context.Context, arg AddCourseParams) (Course, error) {
-	row := q.db.QueryRowContext(ctx, addCourse, arg.ID, arg.IsActive, arg.CourseName)
+	row := q.db.QueryRowContext(ctx, addCourse,
+		arg.ID,
+		arg.IsActive,
+		arg.CourseName,
+		arg.CreatedAt,
+		arg.UpdatedAt,
+	)
 	var i Course
 	err := row.Scan(
 		&i.ID,
 		&i.CategoryID,
 		&i.IsActive,
 		&i.CourseName,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
 
 const listCourses = `-- name: ListCourses :many
 SELECT
-    id, category_id, is_active, course_name
+    id, category_id, is_active, course_name, created_at, updated_at
 FROM
     courses
 `
@@ -57,6 +68,8 @@ func (q *Queries) ListCourses(ctx context.Context) ([]Course, error) {
 			&i.CategoryID,
 			&i.IsActive,
 			&i.CourseName,
+			&i.CreatedAt,
+			&i.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}
