@@ -34,7 +34,7 @@ func TestAddCourse(t *testing.T) {
 			db := postgres.NewFromConn(resource.Container())
 			store, err := storage.NewLearningStore(db)
 			a.NoError(err)
-			server := New(l, store)
+			server := NewGRPC(l, store)
 			course, err := server.AddCourse(ctx, &learningsv1.AddCourseRequest{})
 			a.NoError(err)
 			spew.Dump(course)

@@ -1,3 +1,4 @@
+// ! This is a WIP, do not use this server for anything
 package server
 
 import (
@@ -18,7 +19,7 @@ type Server struct {
 	learningsDB storage.LearningsStore
 }
 
-func NewServer(l logrus.FieldLogger, addr string, ldb storage.LearningsStore) Server {
+func NewHTTP(l logrus.FieldLogger, addr string, ldb storage.LearningsStore) Server {
 	r := mux.NewRouter()
 	srv := http.Server{
 		Addr:              addr,

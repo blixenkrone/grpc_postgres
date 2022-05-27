@@ -1,6 +1,8 @@
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
 
 package proto.learnings.v1;
 
@@ -51,7 +53,12 @@ message ListCoursesRequest {
 
 }
 
+message PingResponse{
+    string message = 1;
+}
+
 service LearningsService {
+    rpc Ping(google.protobuf.Empty) returns (PingResponse){};
     rpc AddCourse(AddCourseRequest) returns (Course){};
     rpc ListCourses(ListCoursesRequest) returns (stream Course){};
 }

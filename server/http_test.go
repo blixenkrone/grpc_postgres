@@ -52,7 +52,7 @@ func TestGetCourse(t *testing.T) {
 			req := httptest.NewRequest(http.MethodGet, "/course", nil)
 			req = mux.SetURLVars(req, map[string]string{"id": "1"})
 
-			s := NewServer(l, ":8080", store)
+			s := NewHTTP(l, ":8080", store)
 			handler := s.getCourse()
 			handler(rr, req)
 
