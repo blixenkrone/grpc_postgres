@@ -2,11 +2,13 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	learningsv1 "github.com/blixenkrone/lea/proto/compiled/v1"
 	"github.com/blixenkrone/lea/storage/postgres"
 	"github.com/blixenkrone/lea/storage/postgres/learnings"
+	"github.com/golang-migrate/migrate/v4"
 	"github.com/google/uuid"
 )
 
@@ -15,15 +17,11 @@ type LearningsStore struct {
 	querier *learnings.Queries
 }
 
-type LearningsReadWriter interface {
-	GetCourses(ctx context.Context) ([]learnings.Course, error)
-}
-
-var _ LearningsReadWriter = LearningsStore{}
-
 func NewLearningStore(db postgres.DB) (LearningsStore, error) {
-	if err := db.RunMigrations(); err != nil {
-		return LearningsStore{}, fmt.Errorf("error running migrations: %w", err)
+	if err := db.RunMigrations("./storage/postgres/migrations"); err != nil {
+		if !errors.Is(err, migrate.ErrNoChange) {
+			return LearningsStore{}, fmt.Errorf("error running migrations: %w", err)
+		}
 	}
 
 	querier := learnings.New(db.DB())

@@ -17,7 +17,7 @@ func TestMigrations(t *testing.T) {
 		defer r.Teardown()
 
 		db := NewFromConn(r.Container())
-		err = db.RunMigrations()
+		err = db.RunMigrations("./migrations")
 		a.NoError(err)
 	})
 }

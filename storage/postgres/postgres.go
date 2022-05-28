@@ -3,8 +3,6 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
-	"os"
-	"path"
 
 	_ "github.com/lib/pq"
 
@@ -23,7 +21,7 @@ type DB struct {
 
 func NewFromConn(db *sql.DB) DB {
 	sqlxDB := sqlx.NewDb(db, "postgres")
-	return DB{sqlxdb: sqlxDB}
+	return DB{sqlxDB}
 }
 
 func NewFromConnectionString(connStr string) (DB, error) {
@@ -34,21 +32,16 @@ func NewFromConnectionString(connStr string) (DB, error) {
 	stdDB := stdlib.OpenDB(cfg)
 	sqlxDB := sqlx.NewDb(stdDB, "postgres")
 
-	return DB{sqlxdb: sqlxDB}, nil
+	return DB{sqlxDB}, nil
 }
 
-func (s *DB) RunMigrations() error {
-	usr, err := os.Getwd()
-	if err != nil {
-		return err
-	}
-	src := fmt.Sprintf("file://%s/storage/postgres/migrations", path.Dir(usr))
-
+func (s DB) RunMigrations(path string) error {
 	driver, err := postgres.WithInstance(s.sqlxdb.DB, &postgres.Config{})
 	if err != nil {
 		return fmt.Errorf("error creating pg driver: %w", err)
 	}
 
+	src := "file://" + path
 	m, err := migrate.NewWithDatabaseInstance(src, "postgres", driver)
 	if err != nil {
 		return fmt.Errorf("error creating migration instance: %w", err)

@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"net"
 	"os"
@@ -16,11 +17,12 @@ import (
 )
 
 var (
-	port = flag.String("port", "50051", "The server port")
+	env  = flag.String("env", "local", "Environment")
+	port = flag.String("port", ":9090", "The server port")
 )
 
 func main() {
-	if err := godotenv.Load(); err != nil {
+	if err := godotenv.Load(fmt.Sprintf("%s.env", *env)); err != nil {
 		panic(err)
 	}
 
@@ -50,12 +52,11 @@ func main() {
 	signal.Notify(done, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
 
 	go func() {
+		l.Infof("starting gRPC on port: %s", *port)
 		if err := srv.Serve(lis); err != nil {
 			panic(err)
 		}
-		l.Infof("started gRPC on port: %s", *port)
 	}()
-	l.Infof("2 started gRPC on port: %s", *port)
 	<-done
 	srv.GracefulStop()
 	log.Println("gracefully shutdown")
