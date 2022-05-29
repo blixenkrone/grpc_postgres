@@ -9,7 +9,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/blixenkrone/lea/server"
+	"github.com/blixenkrone/lea/server/grpc"
 	"github.com/blixenkrone/lea/storage"
 	"github.com/blixenkrone/lea/storage/postgres"
 	"github.com/joho/godotenv"
@@ -41,11 +41,11 @@ func main() {
 		panic(err)
 	}
 
-	if err := learningsDB.MigrateUp("../../../storage/postgres/migrations"); err != nil {
+	if err := learningsDB.MigrateUp("./storage/postgres/migrations"); err != nil {
 		panic(err)
 	}
 
-	srv := server.NewGRPC(l, learningsDB)
+	srv := grpc.NewServer(l, learningsDB)
 	lis, err := net.Listen("tcp", *port)
 	if err != nil {
 		panic(err)

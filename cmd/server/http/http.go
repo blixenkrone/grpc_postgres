@@ -9,7 +9,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/blixenkrone/lea/server"
+	"github.com/blixenkrone/lea/server/http"
 	"github.com/blixenkrone/lea/storage"
 	"github.com/blixenkrone/lea/storage/postgres"
 	"github.com/joho/godotenv"
@@ -45,7 +45,7 @@ func main() {
 		panic(err)
 	}
 
-	srv := server.NewHTTP(l, *addrPort, store)
+	srv := http.NewServer(l, *addrPort, store)
 
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
