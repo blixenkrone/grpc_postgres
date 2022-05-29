@@ -36,13 +36,16 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	learningsDB, err := storage.NewLearningStore(pgdb)
+	learningsDB, err := storage.NewLearningStore(l, pgdb)
 	if err != nil {
 		panic(err)
 	}
 
-	srv := server.NewGRPC(l, learningsDB)
+	if err := learningsDB.MigrateUp("../../../storage/postgres/migrations"); err != nil {
+		panic(err)
+	}
 
+	srv := server.NewGRPC(l, learningsDB)
 	lis, err := net.Listen("tcp", *port)
 	if err != nil {
 		panic(err)

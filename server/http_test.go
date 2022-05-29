@@ -46,7 +46,7 @@ func TestGetCourse(t *testing.T) {
 			db := pgr.Container()
 
 			pgdb := postgres.NewFromConn(db)
-			store, err := storage.NewLearningStore(pgdb)
+			store, err := storage.NewLearningStore(l, pgdb)
 			a.NoError(err)
 
 			req := httptest.NewRequest(http.MethodGet, "/course", nil)

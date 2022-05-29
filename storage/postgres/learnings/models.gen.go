@@ -10,14 +10,8 @@ import (
 	"github.com/google/uuid"
 )
 
-type Category struct {
-	ID    int32
-	Label string
-}
-
 type Course struct {
 	ID         uuid.UUID
-	CategoryID uuid.UUID
 	IsActive   bool
 	CourseName string
 	CreatedAt  time.Time

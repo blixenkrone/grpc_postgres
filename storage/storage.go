@@ -10,26 +10,32 @@ import (
 	"github.com/blixenkrone/lea/storage/postgres/learnings"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 )
 
 type LearningsStore struct {
-	db      postgres.DB
+	log     logrus.FieldLogger
+	pg      postgres.DB
 	querier *learnings.Queries
 }
 
-func NewLearningStore(db postgres.DB) (LearningsStore, error) {
-	if err := db.RunMigrations("./storage/postgres/migrations"); err != nil {
-		if !errors.Is(err, migrate.ErrNoChange) {
-			return LearningsStore{}, fmt.Errorf("error running migrations: %w", err)
-		}
-	}
-
+func NewLearningStore(l logrus.FieldLogger, db postgres.DB) (LearningsStore, error) {
 	querier := learnings.New(db.DB())
-	return LearningsStore{db, querier}, nil
+	return LearningsStore{l, db, querier}, nil
+}
+
+func (s LearningsStore) MigrateUp(srcpath string) error {
+	if err := s.pg.RunMigrations(srcpath); err != nil {
+		if !errors.Is(err, migrate.ErrNoChange) {
+			return fmt.Errorf("error running migrations: %w", err)
+		}
+		s.log.Warnf("ran migrations with no change")
+	}
+	return nil
 }
 
 func (s LearningsStore) Close() error {
-	return s.db.Close()
+	return s.pg.Close()
 }
 
 func (s LearningsStore) GetCourses(ctx context.Context) ([]learnings.Course, error) {
@@ -48,5 +54,17 @@ func (s LearningsStore) AddCourse(ctx context.Context, l *learningsv1.Course) (l
 		CreatedAt:  l.CreatedAt.AsTime(),
 		UpdatedAt:  l.UpdatedAt.AsTime(),
 	}
-	return s.querier.AddCourse(ctx, p)
+	tx, err := s.pg.DB().Begin()
+	if err != nil {
+		return learnings.Course{}, err
+	}
+	c, err := s.querier.WithTx(tx).AddCourse(ctx, p)
+	if err != nil {
+		if err := tx.Rollback(); err != nil {
+			s.log.Errorf("error rolling back tx: %v", err)
+		}
+		return learnings.Course{}, fmt.Errorf("error adding course: %w", err)
+	}
+
+	return c, nil
 }

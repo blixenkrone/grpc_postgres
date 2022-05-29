@@ -21,3 +21,11 @@ services:
       SQLPAD_ADMIN_PASSWORD: 'admin'
       SQLPAD_APP_LOG_LEVEL: debug
       SQLPAD_WEB_LOG_LEVEL: warn
+
+  backend:
+    build: .
+    restart: always
+    ports:
+      - '9090:9090'
+    depends_on:
+      - postgres

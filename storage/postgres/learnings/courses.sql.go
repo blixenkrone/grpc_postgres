@@ -16,7 +16,7 @@ const addCourse = `-- name: AddCourse :one
 INSERT INTO
     courses (id, is_active, course_name, created_at, updated_at)
 VALUES
-    ($1, $2, $3, $4, $5) RETURNING id, category_id, is_active, course_name, created_at, updated_at
+    ($1, $2, $3, $4, $5) RETURNING id, is_active, course_name, created_at, updated_at
 `
 
 type AddCourseParams struct {
@@ -38,7 +38,6 @@ func (q *Queries) AddCourse(ctx context.Context, arg AddCourseParams) (Course, e
 	var i Course
 	err := row.Scan(
 		&i.ID,
-		&i.CategoryID,
 		&i.IsActive,
 		&i.CourseName,
 		&i.CreatedAt,
@@ -49,7 +48,7 @@ func (q *Queries) AddCourse(ctx context.Context, arg AddCourseParams) (Course, e
 
 const listCourses = `-- name: ListCourses :many
 SELECT
-    id, category_id, is_active, course_name, created_at, updated_at
+    id, is_active, course_name, created_at, updated_at
 FROM
     courses
 `
@@ -65,7 +64,6 @@ func (q *Queries) ListCourses(ctx context.Context) ([]Course, error) {
 		var i Course
 		if err := rows.Scan(
 			&i.ID,
-			&i.CategoryID,
 			&i.IsActive,
 			&i.CourseName,
 			&i.CreatedAt,

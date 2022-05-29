@@ -35,13 +35,12 @@ func NewFromConnectionString(connStr string) (DB, error) {
 	return DB{sqlxDB}, nil
 }
 
-func (s DB) RunMigrations(path string) error {
+func (s DB) RunMigrations(srcpath string) error {
 	driver, err := postgres.WithInstance(s.sqlxdb.DB, &postgres.Config{})
 	if err != nil {
 		return fmt.Errorf("error creating pg driver: %w", err)
 	}
-
-	src := "file://" + path
+	src := "file://" + srcpath
 	m, err := migrate.NewWithDatabaseInstance(src, "postgres", driver)
 	if err != nil {
 		return fmt.Errorf("error creating migration instance: %w", err)

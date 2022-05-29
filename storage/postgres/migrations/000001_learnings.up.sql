@@ -1,12 +1,11 @@
-CREATE TABLE IF NOT EXISTS categories (
-    id SERIAL PRIMARY KEY NOT NULL,
-    label TEXT NOT NULL,
-    description TEXT NOT NULL
-);
-
+-- CREATE TABLE IF NOT EXISTS categories (
+--     id SERIAL PRIMARY KEY NOT NULL,
+--     label TEXT NOT NULL,
+--     description TEXT NOT NULL
+-- );
 CREATE TABLE IF NOT EXISTS courses (
     id UUID PRIMARY KEY NOT NULL,
-    category_id SERIAL NOT NULL REFERENCES categories(id),
+    -- category_id SERIAL NOT NULL REFERENCES categories(id),
     is_active BOOLEAN NOT NULL,
     course_name TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL,

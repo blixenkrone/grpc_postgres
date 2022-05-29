@@ -1,7 +1,5 @@
 FROM golang:1.18-alpine as builder
 
-# Set app environment as local or override during build ie.:
-# $ docker build --build-arg APP_ENV=prod .
 ARG APP_ENV=local
 ENV APP_ENV ${APP_ENV}
 
@@ -21,6 +19,12 @@ FROM alpine:latest
 
 # Binary
 COPY --from=builder /src /app
+
+# Set app environment as local or override during build ie.:
+# $ docker build --build-arg APP_ENV=prod .
+ARG APP_ENV=local
+ENV APP_ENV ${APP_ENV}
+COPY --from=builder /src/${APP_ENV}.env .
 # Go certs
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs
 

@@ -24,7 +24,7 @@ var (
 // https://blog.logrocket.com/guide-to-grpc-gateway/
 // https://github.com/grpc-ecosystem/grpc-gateway
 func main() {
-	logger := logrus.New()
+	l := logrus.New()
 
 	if err := godotenv.Load(".env"); err != nil {
 		panic(err)
@@ -40,12 +40,12 @@ func main() {
 		panic(err)
 	}
 
-	store, err := storage.NewLearningStore(db)
+	store, err := storage.NewLearningStore(l, db)
 	if err != nil {
 		panic(err)
 	}
 
-	srv := server.NewHTTP(logger, *addrPort, store)
+	srv := server.NewHTTP(l, *addrPort, store)
 
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
