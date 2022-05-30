@@ -7,7 +7,10 @@ import (
 
 	learningsv1 "github.com/blixenkrone/lea/proto/compiled/v1"
 	"github.com/blixenkrone/lea/storage"
+
 	"github.com/google/uuid"
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_logrus "github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -20,8 +23,11 @@ type server struct {
 	learningsDB storage.LearningsStore
 }
 
-func NewServer(log logrus.FieldLogger, ldb storage.LearningsStore) server {
-	g := grpc.NewServer()
+func NewServer(log *logrus.Entry, ldb storage.LearningsStore) server {
+	unaryMw := grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
+		grpc_logrus.UnaryServerInterceptor(log),
+	))
+	g := grpc.NewServer(unaryMw)
 	srv := server{log, g, ldb}
 	learningsv1.RegisterLearningsServiceServer(g, srv)
 	return srv

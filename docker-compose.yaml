@@ -10,6 +10,8 @@ services:
       - POSTGRES_DB=postgres
     ports:
       - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
 
   sqlpad:
     image: sqlpad/sqlpad:latest
@@ -30,4 +32,10 @@ services:
     depends_on:
       - postgres
     env_file:
-      - local.env
+      - ./local.env
+    volumes:
+      - ./storage/postgres/migrations:/storage/postgres/migrations:ro
+
+volumes:
+  pgdata:
+    driver: local

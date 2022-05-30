@@ -48,7 +48,7 @@ func main() {
 		panic(err)
 	}
 
-	srv := grpc.NewServer(l, learningsDB)
+	srv := grpc.NewServer(logrus.NewEntry(l), learningsDB)
 	lis, err := net.Listen("tcp", *port)
 	if err != nil {
 		panic(err)

@@ -12,7 +12,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// ! WIP
 func TestAddCourse(t *testing.T) {
 	l := logrus.New()
 	ctx := context.Background()
@@ -37,10 +36,10 @@ func TestAddCourse(t *testing.T) {
 			store, err := storage.NewLearningStore(l, db)
 			a.NoError(err)
 
-			err = store.MigrateUp("../storage/postgres/migrations")
+			err = store.MigrateUp("../../storage/postgres/migrations")
 			a.NoError(err)
 
-			server := NewServer(l, store)
+			server := NewServer(logrus.NewEntry(l), store)
 			course, err := server.AddCourse(ctx, &learningsv1.AddCourseRequest{})
 			a.NoError(err)
 			l.Infof("course id: %s", course.Id)
