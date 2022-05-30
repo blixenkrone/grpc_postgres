@@ -31,11 +31,14 @@ func NewFromConnectionString(connStr string) (DB, error) {
 	}
 	stdDB := stdlib.OpenDB(cfg)
 	sqlxDB := sqlx.NewDb(stdDB, "postgres")
-
 	return DB{sqlxDB}, nil
 }
 
 func (s DB) RunMigrations(srcpath string) error {
+	if err := s.Ping(); err != nil {
+		return fmt.Errorf("error pinging PQ: %w", err)
+	}
+
 	driver, err := postgres.WithInstance(s.sqlxdb.DB, &postgres.Config{})
 	if err != nil {
 		return fmt.Errorf("error creating pg driver: %w", err)

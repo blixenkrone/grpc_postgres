@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -17,6 +18,7 @@ import (
 )
 
 var (
+	env      = flag.String("env", "local", "Environment")
 	addrPort = flag.String("p", ":8080", "which port for server")
 )
 
@@ -24,11 +26,11 @@ var (
 // https://blog.logrocket.com/guide-to-grpc-gateway/
 // https://github.com/grpc-ecosystem/grpc-gateway
 func main() {
-	l := logrus.New()
-
-	if err := godotenv.Load(".env"); err != nil {
+	if err := godotenv.Load(fmt.Sprintf("%s.env", *env)); err != nil {
 		panic(err)
 	}
+
+	l := logrus.New()
 
 	pgConnStr, ok := os.LookupEnv("SUPABASE_PG_CONN_STRING")
 	if !ok {

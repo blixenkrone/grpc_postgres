@@ -9,16 +9,16 @@ services:
       - POSTGRES_PASSWORD=example
       - POSTGRES_DB=postgres
     ports:
-      - '5432:5432'
+      - 5432:5432
 
   sqlpad:
     image: sqlpad/sqlpad:latest
-    hostname: 'sqlpad'
+    hostname: sqlpad
     ports:
-      - '3000:3000'
+      - 3000:3000
     environment:
-      SQLPAD_ADMIN: 'admin@sqlpad.com'
-      SQLPAD_ADMIN_PASSWORD: 'admin'
+      SQLPAD_ADMIN: admin@sqlpad.com
+      SQLPAD_ADMIN_PASSWORD: admin
       SQLPAD_APP_LOG_LEVEL: debug
       SQLPAD_WEB_LOG_LEVEL: warn
 
@@ -26,6 +26,6 @@ services:
     build: .
     restart: always
     ports:
-      - '9090:9090'
+      - 9090:9090
     depends_on:
       - postgres
