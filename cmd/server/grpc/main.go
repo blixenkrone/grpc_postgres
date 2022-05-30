@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -22,11 +23,13 @@ var (
 )
 
 func main() {
-	if err := godotenv.Load(fmt.Sprintf("%s.env", *env)); err != nil {
-		panic(err)
-	}
-
 	l := logrus.New()
+
+	if err := godotenv.Load(fmt.Sprintf("%s.env", *env)); err != nil {
+		if !errors.Is(err, os.ErrNotExist) {
+			panic(err)
+		}
+	}
 
 	pgConnStr, ok := os.LookupEnv("PG_CONN_STRING")
 	if !ok {

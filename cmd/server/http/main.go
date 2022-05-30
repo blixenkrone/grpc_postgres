@@ -32,7 +32,7 @@ func main() {
 
 	l := logrus.New()
 
-	pgConnStr, ok := os.LookupEnv("SUPABASE_PG_CONN_STRING")
+	pgConnStr, ok := os.LookupEnv("PG_CONN_STRING")
 	if !ok {
 		panic("no env found for pg conn str")
 	}
