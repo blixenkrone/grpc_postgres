@@ -2,7 +2,6 @@ package grpc
 
 import (
 	"context"
-	"fmt"
 	"net"
 
 	learningsv1 "github.com/blixenkrone/lea/proto/compiled/v1"
@@ -13,6 +12,8 @@ import (
 	grpc_logrus "github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -42,28 +43,27 @@ func (s server) GracefulStop() {
 }
 
 func (s server) AddCourse(ctx context.Context, req *learningsv1.AddCourseRequest) (*learningsv1.Course, error) {
+	if req.Name == "" {
+		return nil, status.Error(codes.InvalidArgument, "name must be provided")
+	}
+
 	newCourse := learningsv1.Course{
-		Id:        uuid.New().String(),
+		Id:        uuid.NewString(),
 		IsActive:  req.IsActive,
 		Name:      req.Name,
-		ModuleIds: nil,
+		ModuleIds: []string{},
 		CreatedAt: timestamppb.Now(),
 		UpdatedAt: timestamppb.Now(),
 	}
 
 	c, err := s.learningsDB.AddCourse(ctx, &newCourse)
 	if err != nil {
-		return nil, fmt.Errorf("error adding course: %err", err)
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &learningsv1.Course{
-		Id:        c.ID.String(),
-		IsActive:  c.IsActive,
-		Name:      c.CourseName,
-		ModuleIds: nil,
-		CreatedAt: timestamppb.New(c.CreatedAt),
-		UpdatedAt: timestamppb.New(c.UpdatedAt),
-	}, nil
+	s.log.Infof("created course %s with id %s", c.CourseName, c.ID)
+
+	return &newCourse, nil
 }
 
 func (s server) ListCourses(req *learningsv1.ListCoursesRequest, stream learningsv1.LearningsService_ListCoursesServer) error {

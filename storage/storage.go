@@ -47,8 +47,12 @@ func (s LearningsStore) GetCourses(ctx context.Context) ([]learnings.Course, err
 }
 
 func (s LearningsStore) AddCourse(ctx context.Context, l *learningsv1.Course) (learnings.Course, error) {
+	id, err := uuid.Parse(l.Id)
+	if err != nil {
+		return learnings.Course{}, err
+	}
 	p := learnings.AddCourseParams{
-		ID:         uuid.New(),
+		ID:         id,
 		IsActive:   l.IsActive,
 		CourseName: l.Name,
 		CreatedAt:  l.CreatedAt.AsTime(),
@@ -64,6 +68,9 @@ func (s LearningsStore) AddCourse(ctx context.Context, l *learningsv1.Course) (l
 			s.log.Errorf("error rolling back tx: %v", err)
 		}
 		return learnings.Course{}, fmt.Errorf("error adding course: %w", err)
+	}
+	if err := tx.Commit(); err != nil {
+		return learnings.Course{}, fmt.Errorf("error commit tx: %w", err)
 	}
 
 	return c, nil
