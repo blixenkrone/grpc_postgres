@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+package learnings.v1;
+
+option go_package = "learningsv1";
+
+message Material {
+    string id = 1;
+    repeated string url = 2;
+}
+
+enum Level {
+    LEVEL_UNSPECIFIED = 0;
+    LEVEL_BEGINNER = 1;
+    LEVEL_INTERMEDIATE= 2;
+    LEVEL_PRO = 3;
+    LEVEL_MASTER = 4;
+}
+
+message Category {
+    string id = 1;
+    string label = 2;
+    string description = 3;
+}
+
+message Module {
+    string id = 1;
+    string course_id = 2;
+    Level level = 3;
+    repeated Material material = 4;
+}
+
+message Course {
+    string id = 1;
+    bool is_active = 3;
+    string name = 4;
+    repeated string module_ids = 5;
+    google.protobuf.Timestamp created_at  = 6;
+    google.protobuf.Timestamp updated_at  = 7;
+}
+
+message AddCourseRequest {
+    string name = 1;
+    bool is_active = 2;
+    Level level = 3;
+}
+
+message AddCourseResponse {
+
+}
+
+message ListCoursesRequest {
+
+}
+
+message ListCoursesResponse {
+
+}
+
+message PingRequest{
+    google.protobuf.Empty empty = 1;
+}
+
+message PingResponse{
+    string message = 1;
+}
+
+service LearningsService {
+    rpc Ping(PingRequest) returns (PingResponse){};
+    rpc AddCourse(AddCourseRequest) returns (AddCourseResponse){};
+    rpc ListCourses(ListCoursesRequest) returns (stream ListCoursesResponse){};
+}
