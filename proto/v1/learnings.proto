@@ -3,7 +3,6 @@ syntax = "proto3";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 
-
 package proto.learnings.v1;
 
 option go_package = "learningsv1";

@@ -13,6 +13,7 @@ import (
 	"github.com/blixenkrone/lea/server/grpc"
 	"github.com/blixenkrone/lea/storage"
 	"github.com/blixenkrone/lea/storage/postgres"
+
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 )

@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package proto.file.v1;
+
+option go_package = "filev1";
+
+message File {
+  bytes content = 1;
+}
+
+message MetaData {
+    enum FileType {
+        UNKNOWN = 0;
+        IMAGE = 1;
+        VIDEO = 2;
+    }
+    string course_id = 1;
+    FileType file_type = 2;
+}
+
+message FileUploadRequest {
+    oneof request {
+        MetaData metadata = 1;
+        File file = 2;
+    }
+}
+
+message FileUploadResponse{
+    enum Status {
+        UNDEFINED = 0;
+        SUCCESS = 1;
+        FAILURE = 2;
+        UNKNOWN = 3;
+    }
+    string id = 1;
+    uint32 size = 2;
+    Status status = 3;
+}
+
+service FileUploadService {
+    rpc UploadFile(stream FileUploadRequest) returns (FileUploadResponse){};
+}
