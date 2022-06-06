@@ -4,7 +4,7 @@ import (
 	"context"
 	"net"
 
-	learningsv1 "github.com/blixenkrone/lea/proto/compiled/v1"
+	learningsv1 "github.com/blixenkrone/lea/proto/compiled/learnings/v1"
 	"github.com/blixenkrone/lea/storage"
 
 	"github.com/google/uuid"
@@ -14,7 +14,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -42,7 +41,7 @@ func (s server) GracefulStop() {
 	s.srv.GracefulStop()
 }
 
-func (s server) AddCourse(ctx context.Context, req *learningsv1.AddCourseRequest) (*learningsv1.Course, error) {
+func (s server) AddCourse(ctx context.Context, req *learningsv1.AddCourseRequest) (*learningsv1.AddCourseResponse, error) {
 	if req.Name == "" {
 		return nil, status.Error(codes.InvalidArgument, "name must be provided")
 	}
@@ -63,7 +62,7 @@ func (s server) AddCourse(ctx context.Context, req *learningsv1.AddCourseRequest
 
 	s.log.Infof("created course %s with id %s", c.CourseName, c.ID)
 
-	return &newCourse, nil
+	return &learningsv1.AddCourseResponse{}, nil
 }
 
 func (s server) ListCourses(req *learningsv1.ListCoursesRequest, stream learningsv1.LearningsService_ListCoursesServer) error {
@@ -71,7 +70,7 @@ func (s server) ListCourses(req *learningsv1.ListCoursesRequest, stream learning
 	panic("not implemented") // TODO: Implement
 }
 
-func (s server) Ping(ctx context.Context, empty *emptypb.Empty) (*learningsv1.PingResponse, error) {
+func (s server) Ping(ctx context.Context, empty *learningsv1.PingRequest) (*learningsv1.PingResponse, error) {
 	return &learningsv1.PingResponse{
 		Message: "Pong!",
 	}, nil

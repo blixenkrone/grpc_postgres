@@ -1,4 +1,4 @@
-.PHONY: generate_sqlc generate_protos lint_protos migrate_up postgres_local
+.PHONY: generate_sqlc,generate_protos,lint_protos,migrate_up,postgres_local
 
 generate: generate_protos generate_sqlc
 

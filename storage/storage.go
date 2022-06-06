@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	learningsv1 "github.com/blixenkrone/lea/proto/compiled/v1"
+	learningsv1 "github.com/blixenkrone/lea/proto/compiled/learnings/v1"
 	"github.com/blixenkrone/lea/storage/postgres"
 	"github.com/blixenkrone/lea/storage/postgres/learnings"
 	"github.com/golang-migrate/migrate/v4"

@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/blixenkrone/lea/docker"
-	learningsv1 "github.com/blixenkrone/lea/proto/compiled/v1"
+	learningsv1 "github.com/blixenkrone/lea/proto/compiled/learnings/v1"
 	"github.com/blixenkrone/lea/storage"
 	"github.com/blixenkrone/lea/storage/postgres"
 	"github.com/sirupsen/logrus"
@@ -42,7 +42,7 @@ func TestAddCourse(t *testing.T) {
 			server := NewServer(logrus.NewEntry(l), store)
 			course, err := server.AddCourse(ctx, &learningsv1.AddCourseRequest{})
 			a.NoError(err)
-			l.Infof("course id: %s", course.Id)
+			l.Infof("course id: %s", course.String())
 		})
 	}
 }
