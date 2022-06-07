@@ -1,9 +1,5 @@
 syntax = "proto3";
 
-// package file.v1;
-
-// option go_package = "filev1";
-
 package learnings.v1;
 
 option go_package = "learningsv1";

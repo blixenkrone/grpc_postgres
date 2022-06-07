@@ -4,10 +4,6 @@
 // 	protoc        (unknown)
 // source: learnings/v1/file.proto
 
-// package file.v1;
-
-// option go_package = "filev1";
-
 package learningsv1
 
 import (

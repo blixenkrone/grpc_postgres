@@ -39,11 +39,7 @@ func (s LearningsStore) Close() error {
 }
 
 func (s LearningsStore) GetCourses(ctx context.Context) ([]learnings.Course, error) {
-	c, err := s.querier.ListCourses(ctx)
-	if err != nil {
-		return nil, err
-	}
-	return c, nil
+	return s.querier.ListCourses(ctx)
 }
 
 func (s LearningsStore) AddCourse(ctx context.Context, l *learningsv1.Course) (learnings.Course, error) {
@@ -74,4 +70,12 @@ func (s LearningsStore) AddCourse(ctx context.Context, l *learningsv1.Course) (l
 	}
 
 	return c, nil
+}
+
+func (s LearningsStore) GetModule(ctx context.Context, moduleID uuid.UUID) (learnings.Module, error) {
+	return s.querier.GetModule(ctx, moduleID)
+}
+
+func (s LearningsStore) GetModules(ctx context.Context, moduleID uuid.UUID) (learnings.Module, error) {
+	return s.querier.Get
 }

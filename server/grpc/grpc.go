@@ -30,6 +30,7 @@ func NewServer(log *logrus.Entry, ldb storage.LearningsStore) server {
 	g := grpc.NewServer(unaryMw)
 	srv := server{log, g, ldb}
 	learningsv1.RegisterLearningsServiceServer(g, srv)
+	learningsv1.RegisterFileUploadServiceServer(g, srv)
 	return srv
 }
 
@@ -39,6 +40,14 @@ func (s server) Serve(lis net.Listener) error {
 
 func (s server) GracefulStop() {
 	s.srv.GracefulStop()
+}
+
+func (s server) UploadFile(stream learningsv1.FileUploadService_UploadFileServer) error {
+	// ctx := stream.Context()
+
+	// s.learningsDB.GetModule(ctx, moduleID uuid.UUID)
+
+	return nil
 }
 
 func (s server) AddCourse(ctx context.Context, req *learningsv1.AddCourseRequest) (*learningsv1.AddCourseResponse, error) {
