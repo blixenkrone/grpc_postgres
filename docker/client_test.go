@@ -11,7 +11,7 @@ func TestPostgresClient(t *testing.T) {
 		a := assert.New(t)
 		p, err := NewPool()
 		a.NoError(err)
-		r, err := p.NewPostgres("testdb")
+		r, err := p.Postgres("testdb")
 		a.NoError(err)
 		err = r.Teardown()
 		a.NoError(err)

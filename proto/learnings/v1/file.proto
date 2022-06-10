@@ -19,7 +19,7 @@ message MetaData {
 }
 
 message UploadFileRequest {
-    oneof request {
+    oneof event {
         MetaData metadata = 1;
         File file = 2;
     }

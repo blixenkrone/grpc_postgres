@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	learningsv1 "github.com/blixenkrone/lea/proto/compiled/v1"
+	learningsv1 "github.com/blixenkrone/lea/proto/compiled/learnings/v1"
 	"github.com/blixenkrone/lea/storage"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"

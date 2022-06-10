@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/blixenkrone/lea/docker"
-	learningsv1 "github.com/blixenkrone/lea/proto/compiled/v1"
+	learningsv1 "github.com/blixenkrone/lea/proto/compiled/learnings/v1"
 	"github.com/blixenkrone/lea/storage"
 	"github.com/blixenkrone/lea/storage/postgres"
 )
@@ -40,7 +40,7 @@ func TestGetCourse(t *testing.T) {
 			l := logrus.New()
 			rr := httptest.NewRecorder()
 
-			pgr, err := p.NewPostgres("learningsdb")
+			pgr, err := p.Postgres("learningsdb")
 			a.NoError(err)
 			defer pgr.Teardown()
 			db := pgr.Container()

@@ -2,6 +2,8 @@ package grpc
 
 import (
 	"context"
+	"errors"
+	"io"
 	"net"
 
 	learningsv1 "github.com/blixenkrone/lea/proto/compiled/learnings/v1"
@@ -43,11 +45,28 @@ func (s server) GracefulStop() {
 }
 
 func (s server) UploadFile(stream learningsv1.FileUploadService_UploadFileServer) error {
-	// ctx := stream.Context()
+	var fileSize int
+	ctx := stream.Context()
 
-	// s.learningsDB.GetModule(ctx, moduleID uuid.UUID)
+	for {
+		req, err := stream.Recv()
+		if !errors.Is(err, io.EOF) {
+			if err != nil {
+				s.log.Errorf("error receiving data: %v", err)
+				return status.Errorf(codes.Unknown, "error received: %w", err)
+			}
+		}
+		if v, ok := req.Request.(*learningsv1.UploadFileRequest_File); ok {
+			fileSize += len(v.File.Content)
+			// br := bytes.NewReader(v.File.Content)
 
-	return nil
+		}
+
+		if v, ok := req.Request.(*learningsv1.UploadFileRequest_Metadata); ok {
+			_ = v.Metadata.FileType
+			s.learningsDB.GetModule(ctx, uuid.Nil)
+		}
+	}
 }
 
 func (s server) AddCourse(ctx context.Context, req *learningsv1.AddCourseRequest) (*learningsv1.AddCourseResponse, error) {

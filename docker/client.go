@@ -2,9 +2,13 @@ package docker
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
+	"net/http"
 	"time"
 
+	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 )
@@ -27,9 +31,61 @@ type Resource[T any] struct {
 	container T
 }
 
-// TODO: minio
+func (p Pool) Minio(dbname string) (*Resource[*minio.Client], error) {
+	env := []string{
+		"MINIO_ACCESS_KEY=access-key",
+		"MINIO_SECRET_KEY=secret-key",
+	}
 
-func (p Pool) NewPostgres(dbname string) (*Resource[*sql.DB], error) {
+	runOpts := dockertest.RunOptions{
+		Repository: "minio/minio",
+		Tag:        "latest",
+		Env:        env,
+		Cmd:        []string{"server", "/data"},
+		PortBindings: map[docker.Port][]docker.PortBinding{
+			docker.Port("9000/tcp"): {{HostPort: "9000"}},
+		},
+	}
+	config := func(cfg *docker.HostConfig) {
+		cfg.AutoRemove = true
+		cfg.RestartPolicy = docker.RestartPolicy{Name: "no"}
+	}
+	resource, err := p.pool.RunWithOptions(&runOpts, config)
+	if err != nil {
+		return nil, fmt.Errorf("error starting pg resource: %w", err)
+	}
+	resource.Expire(120)
+
+	endpoint := fmt.Sprintf("localhost:%s", resource.GetPort("9000/tcp"))
+
+	initFn := func() error {
+		url := fmt.Sprintf("http://%s/minio/health/live", endpoint)
+		resp, err := http.Get(url)
+		if err != nil {
+			return err
+		}
+		if resp.StatusCode != http.StatusOK {
+			return errors.New("status code not OK")
+		}
+		return nil
+	}
+
+	if err := p.pool.Retry(initFn); err != nil {
+		return nil, err
+	}
+
+	c, err := minio.New(endpoint, &minio.Options{
+		Creds:  credentials.NewStaticV4("access-key", "secret-key", ""),
+		Secure: false,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &Resource[*minio.Client]{resource, c}, nil
+}
+
+func (p Pool) Postgres(dbname string) (*Resource[*sql.DB], error) {
 	env := []string{
 		"POSTGRES_USER=admin",
 		"POSTGRES_PASSWORD=password",
@@ -39,13 +95,12 @@ func (p Pool) NewPostgres(dbname string) (*Resource[*sql.DB], error) {
 
 	runOpts := dockertest.RunOptions{
 		Repository: "postgres",
-		Tag:        "latest",
+		Tag:        "14-alpine",
 		Env:        env,
 	}
 	config := func(cfg *docker.HostConfig) {
 		cfg.AutoRemove = true
 		cfg.RestartPolicy = docker.RestartPolicy{Name: "no"}
-
 	}
 	resource, err := p.pool.RunWithOptions(&runOpts, config)
 	if err != nil {
@@ -55,7 +110,7 @@ func (p Pool) NewPostgres(dbname string) (*Resource[*sql.DB], error) {
 	resource.Expire(120)
 
 	var pgdb *sql.DB
-	storeFn := func() error {
+	initFn := func() error {
 		hostAndPort := resource.GetHostPort("5432/tcp")
 		// parts := strings.Split(hostAndPort, ":")
 		// connStr := fmt.Sprintf("user=admin password=password host=%s port=%s dbname=%s", parts[0], parts[1], dbname)
@@ -68,7 +123,7 @@ func (p Pool) NewPostgres(dbname string) (*Resource[*sql.DB], error) {
 		return db.Ping()
 	}
 
-	if err := p.pool.Retry(storeFn); err != nil {
+	if err := p.pool.Retry(initFn); err != nil {
 		return nil, err
 	}
 

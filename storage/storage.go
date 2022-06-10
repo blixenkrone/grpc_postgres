@@ -76,6 +76,6 @@ func (s LearningsStore) GetModule(ctx context.Context, moduleID uuid.UUID) (lear
 	return s.querier.GetModule(ctx, moduleID)
 }
 
-func (s LearningsStore) GetModules(ctx context.Context, moduleID uuid.UUID) (learnings.Module, error) {
-	return s.querier.Get
+func (s LearningsStore) GetModules(ctx context.Context) ([]learnings.Module, error) {
+	return s.querier.GetModules(ctx)
 }

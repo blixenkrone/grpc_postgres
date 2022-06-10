@@ -12,7 +12,7 @@ func TestMigrations(t *testing.T) {
 		a := assert.New(t)
 		pool, err := docker.NewPool()
 		a.NoError(err)
-		r, err := pool.NewPostgres("testdb")
+		r, err := pool.Postgres("testdb")
 		a.NoError(err)
 		defer r.Teardown()
 

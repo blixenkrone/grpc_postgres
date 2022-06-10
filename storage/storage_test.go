@@ -16,7 +16,7 @@ func TestLearningsStoreMigrations(t *testing.T) {
 
 		pool, err := docker.NewPool()
 		a.NoError(err)
-		pg, err := pool.NewPostgres("testdb")
+		pg, err := pool.Postgres("testdb")
 		a.NoError(err)
 
 		pgdb := postgres.NewFromConn(pg.Container())

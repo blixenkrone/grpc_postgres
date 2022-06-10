@@ -28,7 +28,7 @@ func TestAddCourse(t *testing.T) {
 
 			pool, err := docker.NewPool()
 			a.NoError(err)
-			resource, err := pool.NewPostgres("grpcressource")
+			resource, err := pool.Postgres("grpcressource")
 			a.NoError(err)
 			defer resource.Teardown()
 
