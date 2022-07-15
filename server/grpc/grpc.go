@@ -1,6 +1,7 @@
 package grpc
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"io"
@@ -58,8 +59,7 @@ func (s server) UploadFile(stream learningsv1.FileUploadService_UploadFileServer
 		}
 		if v, ok := req.Request.(*learningsv1.UploadFileRequest_File); ok {
 			fileSize += len(v.File.Content)
-			// br := bytes.NewReader(v.File.Content)
-
+			br := bytes.NewReader(v.File.Content)
 		}
 
 		if v, ok := req.Request.(*learningsv1.UploadFileRequest_Metadata); ok {
